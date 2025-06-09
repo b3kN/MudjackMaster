@@ -41,15 +41,15 @@ export default function Navigation() {
             <div className="ml-10 flex items-baseline space-x-4">
               {navigation.map((item) => (
                 <Link key={item.name} href={item.href}>
-                  <a
-                    className={`px-3 py-2 font-medium transition-colors ${
+                  <span
+                    className={`px-3 py-2 font-medium transition-colors cursor-pointer ${
                       isActiveLink(item.href)
                         ? "text-brand-blue"
                         : "text-neutral-gray hover:text-brand-blue"
                     }`}
                   >
                     {item.name}
-                  </a>
+                  </span>
                 </Link>
               ))}
             </div>
@@ -80,8 +80,8 @@ export default function Navigation() {
                 <div className="flex flex-col space-y-4 mt-8">
                   {navigation.map((item) => (
                     <Link key={item.name} href={item.href}>
-                      <a
-                        className={`block px-3 py-2 font-medium transition-colors ${
+                      <span
+                        className={`block px-3 py-2 font-medium transition-colors cursor-pointer ${
                           isActiveLink(item.href)
                             ? "text-brand-blue"
                             : "text-neutral-gray hover:text-brand-blue"
@@ -89,7 +89,7 @@ export default function Navigation() {
                         onClick={() => setIsOpen(false)}
                       >
                         {item.name}
-                      </a>
+                      </span>
                     </Link>
                   ))}
                   <Button 
