@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertContactRequestSchema } from "@shared/schema";
-import { ZodValidationError } from "zod-validation-error";
+import { ZodError } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Contact form submission
@@ -22,11 +22,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         id: contactRequest.id 
       });
     } catch (error) {
-      if (error instanceof ZodValidationError) {
+      if (error instanceof ZodError) {
         res.status(400).json({ 
           success: false, 
           message: "Please check your form data", 
-          errors: error.details 
+          errors: error.errors 
         });
       } else {
         console.error("Error creating contact request:", error);

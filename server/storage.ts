@@ -1,6 +1,6 @@
 import { contactRequests, type ContactRequest, type InsertContactRequest } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, count } from "drizzle-orm";
+import { eq, desc, count, sql, gte } from "drizzle-orm";
 
 export interface IStorage {
   createContactRequest(request: InsertContactRequest): Promise<ContactRequest>;
@@ -62,7 +62,7 @@ export class DatabaseStorage implements IStorage {
     const newThisWeek = await db
       .select({ count: count() })
       .from(contactRequests)
-      .where(eq(contactRequests.createdAt, weekAgo));
+      .where(gte(contactRequests.createdAt, weekAgo));
     
     const pending = await db
       .select({ count: count() })
