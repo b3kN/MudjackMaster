@@ -15,6 +15,7 @@ export const contactRequests = pgTable("contact_requests", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+// Enhanced schema with better validation and TypeScript support
 export const insertContactRequestSchema = createInsertSchema(contactRequests).pick({
   firstName: true,
   lastName: true,
@@ -23,13 +24,52 @@ export const insertContactRequestSchema = createInsertSchema(contactRequests).pi
   serviceType: true,
   description: true,
 }).extend({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  email: z.string().email("Please enter a valid email address"),
-  phone: z.string().optional(),
-  serviceType: z.string().optional(),
-  description: z.string().optional(),
+  firstName: z.string().min(1, "First name is required").max(100, "First name too long"),
+  lastName: z.string().min(1, "Last name is required").max(100, "Last name too long"),
+  email: z.string().email("Please enter a valid email address").max(255, "Email too long"),
+  phone: z.string().regex(/^[\d\s\-\(\)\+]*$/, "Please enter a valid phone number").optional(),
+  serviceType: z.enum(["residential", "commercial", "foundation", "emergency"], {
+    errorMap: () => ({ message: "Please select a valid service type" })
+  }).optional(),
+  description: z.string().max(1000, "Description too long").optional(),
 });
 
 export type InsertContactRequest = z.infer<typeof insertContactRequestSchema>;
 export type ContactRequest = typeof contactRequests.$inferSelect;
+
+// Service types enum for better type safety
+export const ServiceTypes = {
+  RESIDENTIAL: "residential",
+  COMMERCIAL: "commercial", 
+  FOUNDATION: "foundation",
+  EMERGENCY: "emergency"
+} as const;
+
+export type ServiceType = typeof ServiceTypes[keyof typeof ServiceTypes];
+
+// Contact status enum
+export const ContactStatus = {
+  NEW: "new",
+  CONTACTED: "contacted",
+  QUOTED: "quoted",
+  SCHEDULED: "scheduled",
+  COMPLETED: "completed",
+  CANCELLED: "cancelled"
+} as const;
+
+export type ContactStatusType = typeof ContactStatus[keyof typeof ContactStatus];
+
+// API Response types for better type safety
+export interface ApiResponse<T = any> {
+  success: boolean;
+  data?: T;
+  message?: string;
+  error?: string;
+}
+
+export interface ContactRequestStats {
+  total: number;
+  newThisWeek: number;
+  pending: number;
+  completed: number;
+}
